@@ -1,0 +1,6 @@
+bin
+lib/out
+**/obj
+.vscode
+**/*.py
+**/INSTALL
