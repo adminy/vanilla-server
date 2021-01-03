@@ -1,5 +1,5 @@
 OUT     = ../out/libpoly.a
-IFLAGS = -Iinclude
+INCLUDE_DIR += -Iinclude -I../
 CFLAGS += -fno-exceptions
 CPP_FILES := $(wildcard src/*.cpp)
 OBJ_FILES := $(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
@@ -13,9 +13,9 @@ $(OUT): $(OBJ_FILES)
 	# @ranlib $@ @chmod 700 $@
 
 obj/%.o: src/%.cpp
-	@$(CXX) $(CFLAGS) $(IFLAGS) -c $< -o $@
+	@$(CXX) $(CFLAGS) $(INCLUDE_DIR) -c $< -o $@
 
 clean:
 	@rm -rf obj
 
-# dep: $(CXX) $(CFLAGS_DBG) $(IFLAGS) -MM src/*.cpp > src/Depend
+# dep: $(CXX) $(CFLAGS_DBG) $(INCLUDE_DIR) -MM src/*.cpp > src/Depend
