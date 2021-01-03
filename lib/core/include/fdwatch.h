@@ -1,74 +1,36 @@
 #ifndef __INC_LIBTHECORE_FDWATCH_H__
 #define __INC_LIBTHECORE_FDWATCH_H__
 
-#ifdef __WIN32__
+typedef struct fdwatch	FDWATCH;
+typedef struct fdwatch *	LPFDWATCH;
 
-    typedef struct fdwatch	FDWATCH;
-    typedef struct fdwatch *	LPFDWATCH;
+enum EFdwatch
+{
+    FDW_NONE		= 0,
+    FDW_READ		= 1,
+    FDW_WRITE		= 2,
+    FDW_WRITE_ONESHOT	= 4,
+    FDW_EOF			= 8,
+};
 
-    enum EFdwatch
-    {
-	FDW_NONE		= 0,
-	FDW_READ		= 1,
-	FDW_WRITE		= 2,
-	FDW_WRITE_ONESHOT	= 4,
-	FDW_EOF			= 8,
-    };
+struct fdwatch
+{
+fd_set rfd_set;
+fd_set wfd_set;
 
-    typedef struct kevent	KEVENT;
-    typedef struct kevent *	LPKEVENT;
-    typedef int			KQUEUE;
+socket_t* select_fds;
+int* select_rfdidx;
 
-    struct fdwatch
-    {
-	KQUEUE		kq;
+int nselect_fds;
 
-	int		nfiles;
+fd_set working_rfd_set;
+fd_set working_wfd_set;
 
-	LPKEVENT	kqevents;
-	int		nkqevents;
+int nfiles;
 
-	LPKEVENT	kqrevents;
-	int *		fd_event_idx;
-
-	void **		fd_data;
-	int *		fd_rw;
-    };
-
-#else
-
-    typedef struct fdwatch	FDWATCH;
-    typedef struct fdwatch *	LPFDWATCH;
-
-    enum EFdwatch
-    {
-	FDW_NONE		= 0,
-	FDW_READ		= 1,
-	FDW_WRITE		= 2,
-	FDW_WRITE_ONESHOT	= 4,
-	FDW_EOF			= 8,
-    };
-
-    struct fdwatch
-    {
-	fd_set rfd_set;
-	fd_set wfd_set;
-
-	socket_t* select_fds;
-	int* select_rfdidx;
-
-	int nselect_fds;
-
-	fd_set working_rfd_set;
-	fd_set working_wfd_set;
-
-	int nfiles;
-
-	void** fd_data;
-	int* fd_rw;
-    };
-
-#endif // WIN32
+void** fd_data;
+int* fd_rw;
+};
 
 #ifdef __cplusplus
 extern "C"

@@ -2,9 +2,7 @@
 #define __INC_METIN_II_COMMON_POOL_H__
 
 #include <assert.h>
-#ifndef __WIN32__
 #include <string>
-#endif
 
 template<typename T>
 class CPoolNode : public T

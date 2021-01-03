@@ -800,7 +800,7 @@ bool IS_SPEED_HACK(LPCHARACTER ch, LPCHARACTER victim, DWORD current_time)
                         current_time - victim->m_AttackedLog.dwAttackedTime,
                         GET_ATTACK_SPEED(ch),
                         ch->m_speed_hack_count);
-//              std::auto_ptr<SQLMsg> msg(DBManager::instance().DirectQuery("UPDATE account.account SET status= 'BLOCK' WHERE id = %d", ch->GetDesc()->GetAccountTable().id));
+//              std::unique_ptr<SQLMsg> msg(DBManager::instance().DirectQuery("UPDATE account.account SET status= 'BLOCK' WHERE id = %d", ch->GetDesc()->GetAccountTable().id));
                 ch->GetDesc()->DelayedDisconnect(3);
             }
              

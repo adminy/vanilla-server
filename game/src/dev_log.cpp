@@ -48,11 +48,8 @@ void dev_log(const char *file, int line, const char *function, int level, const 
 	// ---------------------------------------
 	// open file
 	// ---------------------------------------
-#ifndef __WIN32__
 	fd = ::open("DEV_LOG.log", O_WRONLY|O_APPEND|O_CREAT, 0666);
-#else
-	fd = ::_open("DEV_LOG.log", _O_WRONLY|_O_APPEND|_O_CREAT, 0666);
-#endif
+
 
 	if (fd < 0)
 		return;

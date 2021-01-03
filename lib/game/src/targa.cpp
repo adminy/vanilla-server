@@ -1,8 +1,6 @@
 #include "../../core/include/stdafx.h"
 #include <stdio.h>
-#ifndef __WIN32__
 #include <string>
-#endif
 #include "targa.h"
 
 CTargaImage::CTargaImage()

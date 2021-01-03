@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Sema_phore.h"
 #include <semaphore.h>
-#ifndef __WIN32__
 
 CSemaphore::CSemaphore() : m_hSem(NULL)
 {
@@ -73,70 +72,3 @@ int CSemaphore::Release(int count)
 
 	return true;
 }
-
-#else
-
-CSemaphore::CSemaphore() : m_hSem(NULL)
-{
-	Initialize();
-}
-
-CSemaphore::~CSemaphore()
-{
-	Destroy();
-}
-
-int CSemaphore::Initialize()
-{
-	Clear();
-
-	m_hSem = ::CreateSemaphore(NULL, 0, 32, NULL);
-
-	if (m_hSem == NULL) {
-		return false;
-	}
-
-	return true;
-}
-
-void CSemaphore::Destroy()
-{
-	Clear();
-}
-
-void CSemaphore::Clear()
-{
-	if (m_hSem == NULL) {
-		return;
-	}
-	::CloseHandle(m_hSem);
-	m_hSem = NULL;
-}
-
-int CSemaphore::Wait()
-{
-	if (!m_hSem)
-		return true;
-
-	DWORD dwWaitResult = ::WaitForSingleObject(m_hSem, INFINITE);
-
-	switch (dwWaitResult) {
-		case WAIT_OBJECT_0:
-			return true;
-		default:
-			break;
-	}
-	return false;
-}
-
-int CSemaphore::Release(int count)
-{
-	if (!m_hSem)
-		return false;
-
-	::ReleaseSemaphore(m_hSem, count, NULL);
-
-	return true;
-}
-
-#endif

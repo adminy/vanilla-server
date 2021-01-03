@@ -101,15 +101,7 @@ bool CBlockCountry::IsBlockedCountryIp(const char *user_ip)
 	BLOCK_IP* block_ip;
 	BLOCK_IP_VECTOR::iterator	iter;
 	struct in_addr st_addr;
-
-#ifndef __WIN32__
 	if (0 == inet_aton(user_ip, &st_addr))
-#else
-	unsigned long in_address;
-	in_address = inet_addr(user_ip);
-	st_addr.s_addr = in_address;
-	if (INADDR_NONE == in_address)
-#endif
 		return true;  // 아이피가 괴상하니 일단 블럭처리
 
 	DO_ALL_BLOCK_IP(iter)

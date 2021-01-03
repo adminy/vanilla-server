@@ -12,11 +12,7 @@ extern "C"
 {
 #endif /* __cplusplus */
 
-#ifdef __WIN32__
-typedef int socklen_t;
-#else
 #define INVALID_SOCKET -1
-#endif
 
     extern int		socket_read(socket_t desc, char* read_point, size_t space_left);
     extern int		socket_write(socket_t desc, const char *data, size_t length);

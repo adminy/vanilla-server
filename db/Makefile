@@ -4,7 +4,7 @@ INCLUDE_DIR += -I../lib -I/usr/include/mysql
 LIBDIR = -L/usr/local/lib -L/usr/local/lib/mysql -L../lib/out
 CFLAGS += -Wno-invalid-source-encoding # Removed -fno-rtti 
 # CLINK_FLAGS = -Wl,-rpath,/usr/local/lib32/metin2 #-flto -fsanitize=address,undefined fsanitize-recover=all
-LIBS = -pthread -lm -lmd -lthecore -lmysqlclient -lsql -lpoly -lgame -lz
+LIBS = -pthread -lm -lcore -lmysqlclient -lsql -lpoly -lgame -lz  -nostartfiles # -lmd -g
 CPP_FILES := $(wildcard *.cpp)
 OBJ_FILES := $(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 
@@ -17,7 +17,7 @@ obj/%.o: src/%.cpp
 
 
 $(OUT): $(OBJ_FILES)
-		@$(CXX) $(CFLAGS) $(CLINK_FLAGS) $(LIBDIR) $^ $(LIBS) -o $@
+	@$(CXX) $(CFLAGS) $(CLINK_FLAGS) $(LIBDIR) $^ $(LIBS) -o $@
 
 clean:
 	@rm -rf obj

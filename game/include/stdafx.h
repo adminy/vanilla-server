@@ -20,10 +20,8 @@
 #include <map>
 #include <set>
 #include <queue>
-#ifndef __WIN32__
 #include <string>
 #include <vector>
-#endif
 
 #include <float.h>
 #include <unordered_map>

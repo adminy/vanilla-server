@@ -6,11 +6,6 @@ extern "C"
 {
 #endif /* __cplusplus */
 
-#ifdef __WIN32__
-#define isdigit iswdigit
-#define isspace iswspace
-#endif
-
 #define ishan(ch)       (((ch) & 0xE0) > 0x90)
 #define ishanasc(ch)    (isascii(ch) || ishan(ch))
 #define ishanalp(ch)    (isalpha(ch) || ishan(ch))

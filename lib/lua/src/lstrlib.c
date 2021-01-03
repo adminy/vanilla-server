@@ -9,7 +9,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string>
+#include <string.h>
 
 #define lstrlib_c
 

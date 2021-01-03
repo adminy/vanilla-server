@@ -1,5 +1,3 @@
-#ifndef __WIN32__
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -82,6 +80,4 @@ void WAIT_CHILD(void)
 		exit(1);
 	}
 }
-
-#endif
 

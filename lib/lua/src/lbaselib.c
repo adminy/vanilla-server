@@ -9,7 +9,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string>
+#include <string.h>
 
 #define lbaselib_c
 

@@ -3,9 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifndef __WIN32__
 #include <string>
-#endif
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

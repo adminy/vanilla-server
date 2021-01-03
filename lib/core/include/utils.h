@@ -145,8 +145,4 @@ extern "C++"
 #endif
 #endif
 
-#ifdef __WIN32__
-extern void gettimeofday(struct timeval* t, struct timezone* dummy);
-#endif
-
 #endif	// __INC_UTILS_H__

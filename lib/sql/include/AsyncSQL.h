@@ -4,9 +4,7 @@
 #include "../../core/include/stdafx.h"
 #include "../../core/include/log.h"
 
-#ifndef __WIN32__
 #include <string>
-#endif
 #include <queue>
 #include <vector>
 #include <map>
@@ -184,15 +182,9 @@ class CAsyncSQL
 
 		volatile bool m_bEnd;
 
-#ifndef __WIN32__
 		pthread_t m_hThread;
 		pthread_mutex_t	* m_mtxQuery;
 		pthread_mutex_t	* m_mtxResult;
-#else
-		HANDLE m_hThread;
-		CRITICAL_SECTION* m_mtxQuery;
-		CRITICAL_SECTION* m_mtxResult;
-#endif
 
 		CSemaphore m_sem;
 

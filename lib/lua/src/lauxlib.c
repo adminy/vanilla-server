@@ -9,7 +9,7 @@
 #include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
-#include <string>
+#include <string.h>
 
 
 /* This file uses only the official API of Lua.

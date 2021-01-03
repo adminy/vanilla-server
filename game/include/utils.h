@@ -40,12 +40,7 @@ inline int DISTANCE_APPROX(int dx, int dy)
 		( min << 7 ) - ( min << 5 ) + ( min << 3 ) - ( min << 1 )) >> 8 );
 }
 
-#ifndef __WIN32__
-inline WORD MAKEWORD(BYTE a, BYTE b)
-{
-	return static_cast<WORD>(a) | (static_cast<WORD>(b) << 8);
-}
-#endif
+inline WORD MAKEWORD(BYTE a, BYTE b) { return static_cast<WORD>(a) | (static_cast<WORD>(b) << 8); }
 
 extern void set_global_time(time_t t);
 extern time_t get_global_time();

@@ -77,7 +77,7 @@ SECTREEID SECTREE::GetID()
 
 void SECTREE::IncreasePC()
 {
-	LPSECTREE_LIST::iterator it_tree = m_neighbor_list.begin();
+	auto it_tree = m_neighbor_list.begin();
 
 	while (it_tree != m_neighbor_list.end())
 	{
@@ -88,7 +88,7 @@ void SECTREE::IncreasePC()
 
 void SECTREE::DecreasePC()
 {
-	LPSECTREE_LIST::iterator it_tree = m_neighbor_list.begin();
+	auto it_tree = m_neighbor_list.begin();
 
 	while (it_tree != m_neighbor_list.end())
 	{

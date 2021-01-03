@@ -2,9 +2,7 @@
 #define __INC_SPAM_MANAGER_H__
 
 #include <ctype.h>
-#ifndef __WIN32__
 #include <string>
-#endif
 #include <vector>
 #include <utility>
 

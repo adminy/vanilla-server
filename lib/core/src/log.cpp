@@ -7,15 +7,9 @@
 #define __LIBTHECORE__
 #include "stdafx.h"
 
-#ifndef __WIN32__
 #define SYSLOG_FILENAME "syslog"
 #define SYSERR_FILENAME "syserr"
 #define PTS_FILENAME "PTS"
-#else
-#define SYSLOG_FILENAME "syslog.txt"
-#define SYSERR_FILENAME "syserr.txt"
-#define PTS_FILENAME "PTS.txt"
-#endif
 
 typedef struct log_file_s * LPLOGFILE;
 typedef struct log_file_s LOGFILE;
@@ -106,7 +100,6 @@ void log_rotate(void)
 	log_file_rotate(log_file_sys);
 }
 
-#ifndef __WIN32__
 void _sys_err(const char *func, int line, const char *format, ...)
 {
 	va_list args;
@@ -140,44 +133,6 @@ void _sys_err(const char *func, int line, const char *format, ...)
 	fputs(buf, log_file_sys->fp);
 	fflush(log_file_sys->fp);
 }
-#else
-void _sys_err(const char *func, int line, const char *format, ...)
-{
-	va_list args;
-	time_t ct = time(0);  
-	char *time_s = asctime(localtime(&ct));
-
-	char buf[1024 + 2]; // \n을 붙이기 위해..
-	int len;
-
-	if (!log_file_err)
-		return;
-
-	time_s[strlen(time_s) - 1] = '\0';
-	len = snprintf(buf, 1024, "SYSERR: %-15.15s :: %s: ", time_s + 4, func);
-	buf[1025] = '\0';
-
-	if (len < 1024)
-	{
-		va_start(args, format);
-		vsnprintf(buf + len, 1024 - len, format, args);
-		va_end(args);
-	}
-
-	strcat(buf, "\n");
-
-	// log_file_err 에 출력
-	fputs(buf, log_file_err->fp);
-	fflush(log_file_err->fp);
-
-	// log_file_sys 에도 출력
-	fputs(buf, log_file_sys->fp);
-	fflush(log_file_sys->fp);
-
-	fputs(buf, stdout);
-	fflush(stdout);
-}
-#endif
 
 static char sys_log_header_string[33] = { 0 };
 
@@ -210,12 +165,8 @@ void sys_log(unsigned int bit, const char *format, ...)
 		fputc('\n', log_file_sys->fp);
 		fflush(log_file_sys->fp);
 	}
-
-#ifndef __WIN32__
 	// log_level이 1 이상일 경우에는 테스트일 경우가 많으니 stdout에도 출력한다.
-	if (log_level_bits > 1)
-	{
-#endif
+	if (log_level_bits > 1) {
 		fprintf(stdout, "%s", sys_log_header_string);
 
 		va_start(args, format);
@@ -224,9 +175,7 @@ void sys_log(unsigned int bit, const char *format, ...)
 
 		fputc('\n', stdout);
 		fflush(stdout);
-#ifndef __WIN32__
 	}
-#endif
 }
 
 void pt_log(const char *format, ...)
@@ -321,7 +270,6 @@ void log_file_delete_old(const char *filename)
 	new_tm = *tm_calc(NULL, -log_keep_days);
 	sprintf(buf, "%04d%02d%02d", new_tm.tm_year + 1900, new_tm.tm_mon + 1, new_tm.tm_mday);
 	num1 = atoi(buf);
-#ifndef __WIN32__
 	{
 		struct dirent ** namelist;
 		int	n;
@@ -362,31 +310,6 @@ void log_file_delete_old(const char *filename)
 
 		free(namelist);
 	}
-#else
-	{
-		WIN32_FIND_DATA fdata;
-		HANDLE			hFind;
-		if ((hFind = FindFirstFile(filename, &fdata)) != INVALID_HANDLE_VALUE)
-		{
-			do
-			{
-				if (!isdigit(*fdata.cFileName))
-					continue;
-
-				num2 = atoi(fdata.cFileName);
-
-				if (num2 <= num1)
-				{
-					sprintf(system_cmd, "del %s\\%s", filename, fdata.cFileName);
-					system(system_cmd);
-
-					sys_log(0, "SYSTEM_CMD: %s", system_cmd);
-				}
-			}
-			while (FindNextFile(hFind, &fdata));
-		}
-	}
-#endif
 }
 
 void log_file_rotate(LPLOGFILE logfile)
@@ -404,11 +327,7 @@ void log_file_rotate(LPLOGFILE logfile)
 	struct tm new_tm;
 	new_tm = *tm_calc(&curr_tm, -3);
 
-#ifndef __WIN32__
 	sprintf(system_cmd, "rm -rf %s/%04d%02d%02d", log_dir, new_tm.tm_year + 1900, new_tm.tm_mon + 1, new_tm.tm_mday);
-#else
-	sprintf(system_cmd, "del %s\\%04d%02d%02d", log_dir, new_tm.tm_year + 1900, new_tm.tm_mon + 1, new_tm.tm_mday);
-#endif
 	system(system_cmd);
 
 	sys_log(0, "SYSTEM_CMD: %s", system_cmd);
@@ -421,13 +340,8 @@ void log_file_rotate(LPLOGFILE logfile)
 		struct stat	stat_buf;
 		snprintf(dir, 128, "%s/%04d%02d%02d", log_dir, curr_tm.tm_year + 1900, curr_tm.tm_mon + 1, curr_tm.tm_mday);
 
-		if (stat(dir, &stat_buf) != 0 || S_ISDIR(stat_buf.st_mode))
-		{
-#ifdef __WIN32__
-			CreateDirectory(dir, NULL);
-#else
+		if (stat(dir, &stat_buf) != 0 || S_ISDIR(stat_buf.st_mode)) {
 			mkdir(dir, S_IRWXU);
-#endif
 		}
 
 		sys_log(0, "SYSTEM: LOG ROTATE (%04d-%02d-%02d %d)", 
@@ -437,11 +351,8 @@ void log_file_rotate(LPLOGFILE logfile)
 		fclose(logfile->fp);
 
 		// 옮긴다.
-#ifndef __WIN32__
+
 		snprintf(system_cmd, 128, "mv %s %s/%s.%02d", logfile->filename, dir, logfile->filename, logfile->last_hour);
-#else
-		snprintf(system_cmd, 128, "move %s %s\\%s.%02d", logfile->filename, dir, logfile->filename, logfile->last_hour);
-#endif
 		system(system_cmd);
 
 		// 마지막 저장시간 저장

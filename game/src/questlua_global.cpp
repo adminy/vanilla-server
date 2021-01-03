@@ -26,12 +26,7 @@
 #include "db.h"
 
 #undef sys_err
-#ifndef __WIN32__
 #define sys_err(fmt, args...) quest::CQuestManager::instance().QuestError(__FUNCTION__, __LINE__, fmt, ##args)
-#else
-#define sys_err(fmt, ...) quest::CQuestManager::instance().QuestError(__FUNCTION__, __LINE__, fmt, __VA_ARGS__)
-
-#endif
 
 extern ACMD(do_block_chat);
 
@@ -56,7 +51,7 @@ namespace quest
 		MYSQL_FIELD * field;
 		MYSQL_RES * result;
 		// SQLMsg * pMsg = DBManager::instance().DirectQuery(szQuery);
-		std::auto_ptr<SQLMsg> pMsg(DBManager::instance().DirectQuery(lua_tostring(L, 1)));
+		std::unique_ptr<SQLMsg> pMsg(DBManager::instance().DirectQuery(lua_tostring(L, 1)));
 		if (pMsg.get())
 		{
 			// ret1 (number of affected rows)

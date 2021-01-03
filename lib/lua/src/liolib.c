@@ -31,11 +31,7 @@ typedef struct FileHandle {
 ** by default, gcc does not get `tmpname'
 */
 #ifndef USE_TMPNAME
-#ifdef __GNUC__
-#define USE_TMPNAME	0
-#else
 #define USE_TMPNAME	1
-#endif
 #endif
 
 

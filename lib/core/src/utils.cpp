@@ -342,19 +342,10 @@ int MINMAX(int min, int value, int max)
     return (max < tv) ? max : tv;
 }
 
-DWORD thecore_random()
-{
-#ifdef __WIN32__
-    return rand();
-#else
-    return random();
-#endif
-}
+DWORD thecore_random() { return random(); }
 
-int number_ex(int from, int to, const char *file, int line)
-{
-    if (from > to)
-    {
+int number_ex(int from, int to, const char *file, int line) {
+    if (from > to) {
 	int tmp = from;
 
 	sys_err("number(): first argument is bigger than second argument %d -> %d, %s %d", from, to, file, line);
@@ -378,7 +369,6 @@ float fnumber(float from, float to)
 	return (((float)thecore_random() / (float)RAND_MAX) * (to - from)) + from;
 }
 
-#ifndef __WIN32__
 void thecore_sleep(struct timeval* timeout)
 {
     if (select(0, (fd_set *) 0, (fd_set *) 0, (fd_set *) 0, timeout) < 0)
@@ -419,31 +409,6 @@ uint64_t rdtsc()
 }
 */
 
-#else
-
-void thecore_sleep(struct timeval* timeout)
-{
-    Sleep(timeout->tv_sec * 1000 + timeout->tv_usec / 1000);
-}
-
-void thecore_msleep(DWORD dwMillisecond)
-{
-    Sleep(dwMillisecond);
-}
-
-void gettimeofday(struct timeval* t, struct timezone* dummy)
-{
-    DWORD millisec = GetTickCount();
-
-    t->tv_sec = (millisec / 1000);
-    t->tv_usec = (millisec % 1000) * 1000;
-}
-
-void core_dump_unix(const char *who, WORD line)
-{   
-}
-
-#endif
 
 float get_float_time()
 {

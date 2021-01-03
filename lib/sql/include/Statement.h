@@ -2,10 +2,7 @@
 #define __INC_METIN_II_LIBSQL_STATEMENT_H__
 
 #include "AsyncSQL.h"
-
-#ifndef __WIN32__
 #include <string>
-#endif
 #include <vector>
 
 class CStmt

@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include <sstream>
-#ifndef __WIN32__
 #include <ifaddrs.h>
-#endif
 
 #include "../../common/length.h"
 #include "constants.h"
@@ -325,7 +323,6 @@ static void FN_log_adminpage()
 
 bool GetIPInfo()
 {
-#ifndef __WIN32__
 	struct ifaddrs* ifaddrp = NULL;
 
 	if (0 != getifaddrs(&ifaddrp))
@@ -339,53 +336,19 @@ bool GetIPInfo()
 				sai->sin_addr.s_addr == 0 || // ignore if address is 0.0.0.0
 				sai->sin_addr.s_addr == 16777343) // ignore if address is 127.0.0.1
 			continue;
-#else
-	WSADATA wsa_data;
-	char host_name[100];
-	HOSTENT* host_ent;
-	int n = 0;
-
-	if (WSAStartup(0x0101, &wsa_data)) {
-		return false;
-	}
-
-	gethostname(host_name, sizeof(host_name));
-	host_ent = gethostbyname(host_name);
-	if (host_ent == NULL) {
-		return false;
-	}
-	for ( ; host_ent->h_addr_list[n] != NULL; ++n) {
-		struct sockaddr_in addr;
-		struct sockaddr_in* sai = &addr;
-		memcpy(&sai->sin_addr.s_addr, host_ent->h_addr_list[n], host_ent->h_length);
-#endif
-
 		char * netip = inet_ntoa(sai->sin_addr);
 
 		if (g_szPublicIP[0] != '0')
 		{
 			strncpy(g_szInternalIP, netip, sizeof(g_szInternalIP));
-#ifndef __WIN32__
 			fprintf(stderr, "INTERNAL_IP: %s interface %s\n", netip, ifap->ifa_name);
-#else
-			fprintf(stderr, "INTERNAL_IP: %s\n", netip);
-#endif
 		} else if (g_szPublicIP[0] == '0') {
 			strncpy(g_szPublicIP, netip, sizeof(g_szPublicIP));
-#ifndef __WIN32__
 			fprintf(stderr, "PUBLIC_IP: %s interface %s\n", netip, ifap->ifa_name);
-#else
-			fprintf(stderr, "PUBLIC_IP: %s\n", netip);
-#endif
 		}
 	}
 
-#ifndef __WIN32__
 	freeifaddrs( ifaddrp );
-#else
-	WSACleanup();
-#endif
-
 	if (g_szPublicIP[0] != '0')
 		return true;
 	else

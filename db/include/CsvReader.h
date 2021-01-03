@@ -1,9 +1,7 @@
 #ifndef __CSVFILE_H__
 #define __CSVFILE_H__
 
-#ifndef __WIN32__
 #include <string>
-#endif
 #include <vector>
 
 #if _MSC_VER

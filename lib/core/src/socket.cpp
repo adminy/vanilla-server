@@ -56,14 +56,6 @@ int socket_read(socket_t desc, char* read_point, size_t space_left)
 	return (0);
 #endif
 
-#ifdef __WIN32__
-	int wsa_error = WSAGetLastError();
-	if (wsa_error == WSAEWOULDBLOCK) {
-		return 0;
-	}
-	sys_log(0, "socket_read: WSAGetLastError returned %d", wsa_error);
-#endif
-
     sys_err("about to lose connection");
     return -1;
 }
@@ -94,15 +86,6 @@ int socket_write_tcp(socket_t desc, const char *txt, int length)
     if (errno == EDEADLK)
 	return 0;
 #endif
-
-#ifdef __WIN32__
-	int wsa_error = WSAGetLastError();
-	if (wsa_error == WSAEWOULDBLOCK) {
-		return 0;
-	}
-	sys_log(0, "socket_write_tcp: WSAGetLastError returned %d", wsa_error);
-#endif
-
     /* Looks like the error was fatal.  Too bad. */
     return -1;
 }
@@ -157,25 +140,12 @@ int socket_bind(const char * ip, int port, int protocol)
     }
 
     socket_reuse(s);
-#ifndef __WIN32__
     socket_lingeroff(s);
-#else
-	// Winsock2: SO_DONTLINGER, SO_KEEPALIVE, SO_LINGER, and SO_OOBINLINE are 
-	// not supported on sockets of type SOCK_DGRAM
-	if (protocol == SOCK_STREAM) {
-		socket_lingeroff(s);
-	}
-#endif
-
     memset(&sa, 0, sizeof(sa));
     sa.sin_family	= AF_INET;
 //윈도우 서버는 개발용으로만 쓰기 때문에 BIND ip를 INADDR_ANY로 고정
 //(테스트의 편의성을 위해)
-#ifndef __WIN32__
     sa.sin_addr.s_addr	= inet_addr(ip);
-#else
-	sa.sin_addr.s_addr	= INADDR_ANY;
-#endif 
     sa.sin_port		= htons((unsigned short) port);
 
     if (bind(s, (struct sockaddr *) &sa, sizeof(sa)) < 0)
@@ -209,11 +179,7 @@ int socket_udp_bind(const char * ip, int port)
 
 void socket_close(socket_t s)
 {
-#ifdef __WIN32__
-    closesocket(s);
-#else
     close(s);
-#endif
 }
 
 socket_t socket_accept(socket_t s, struct sockaddr_in *peer)
@@ -284,32 +250,14 @@ socket_t socket_connect(const char* host, WORD port)
     if ((rslt = connect(s, (struct sockaddr *) &server_addr, sizeof(server_addr))) < 0)
     {
 	socket_close(s);
-
-#ifdef __WIN32__
-	switch (WSAGetLastError())
-#else
-	    switch (rslt)
-#endif
-	    {
-#ifdef __WIN32__
-		case WSAETIMEDOUT:
-#else
+    switch (rslt) {
 		case EINTR:
-#endif
 		    sys_err("HOST %s:%d connection timeout.", host, port);
 		    break;
-#ifdef __WIN32__
-		case WSAECONNREFUSED:
-#else
 		case ECONNREFUSED:
-#endif
 		    sys_err("HOST %s:%d port is not opened. connection refused.", host, port);
 		    break;
-#ifdef __WIN32__
-		case WSAENETUNREACH:
-#else
 		case ENETUNREACH:
-#endif
 		    sys_err("HOST %s:%d is not reachable from this host.", host, port);
 		    break;
 
@@ -325,7 +273,6 @@ socket_t socket_connect(const char* host, WORD port)
     return (s);
 }
 
-#ifndef __WIN32__
 
 #ifndef O_NONBLOCK
 #define O_NONBLOCK O_NDELAY
@@ -358,43 +305,24 @@ void socket_block(socket_t s)
 	return;
     }
 }
-#else
-void socket_nonblock(socket_t s)
-{
-    unsigned long val = 1;
-    ioctlsocket(s, FIONBIO, &val);
-}
 
-void socket_block(socket_t s)
-{
-    unsigned long val = 0;
-    ioctlsocket(s, FIONBIO, &val);
-}
-#endif
-
-void socket_dontroute(socket_t s)
-{
+void socket_dontroute(socket_t s) {
     int set;
 
-    if (setsockopt(s, SOL_SOCKET, SO_DONTROUTE, (const char *) &set, sizeof(int)) < 0)
-    {
-	sys_err("setsockopt: dontroute: %s", strerror(errno));
-	socket_close(s);
-	return;
+    if (setsockopt(s, SOL_SOCKET, SO_DONTROUTE, (const char *) &set, sizeof(int)) < 0) {
+        sys_err("setsockopt: dontroute: %s", strerror(errno));
+        socket_close(s);
+        return;
     }
 }
 
 void socket_lingeroff(socket_t s)
 {
-#ifdef __WIN32__
-    int linger;
-    linger = 0;
-#else
+
     struct linger linger;
 
     linger.l_onoff	= 0;
     linger.l_linger	= 0;
-#endif
     if (setsockopt(s, SOL_SOCKET, SO_LINGER, (const char*) &linger, sizeof(linger)) < 0)
     {
 	sys_err("setsockopt: linger: %s", strerror(errno));
@@ -405,15 +333,10 @@ void socket_lingeroff(socket_t s)
 
 void socket_lingeron(socket_t s)
 {
-#ifdef __WIN32__
-    int linger;
-    linger = 0;
-#else
     struct linger linger;
 
     linger.l_onoff	= 1;
     linger.l_linger	= 0;
-#endif
     if (setsockopt(s, SOL_SOCKET, SO_LINGER, (const char*) &linger, sizeof(linger)) < 0)
     {
 	sys_err("setsockopt: linger: %s", strerror(errno));
@@ -473,20 +396,13 @@ void socket_sndbuf(socket_t s, unsigned int opt)
 }
 
 // sec : seconds, usec : microseconds
-void socket_timeout(socket_t s, long sec, long usec)
-{
-#ifndef __WIN32__
+void socket_timeout(socket_t s, long sec, long usec) {
     struct timeval      rcvopt;
     struct timeval      sndopt;
     socklen_t		optlen = sizeof(rcvopt);
 
     rcvopt.tv_sec = sndopt.tv_sec = sec;
     rcvopt.tv_usec = sndopt.tv_usec = usec;
-#else
-    socklen_t		rcvopt, sndopt;
-    socklen_t		optlen = sizeof(rcvopt);
-    sndopt = rcvopt = (sec * 1000) + (usec / 1000);
-#endif
     if (setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (const char*) &rcvopt, optlen) < 0)
     {
 	sys_err("setsockopt: timeout: %s", strerror(errno));
@@ -516,10 +432,6 @@ void socket_timeout(socket_t s, long sec, long usec)
 	socket_close(s);
 	return;
     }
-
-#ifndef __WIN32__
-    sys_log(1, "SYSTEM: %d: TIMEOUT RCV: %d.%d, SND: %d.%d", s, rcvopt.tv_sec, rcvopt.tv_usec, sndopt.tv_sec, sndopt.tv_usec);
-#endif
 }
 
 void socket_reuse(socket_t s)

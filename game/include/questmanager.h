@@ -173,12 +173,8 @@ namespace quest
 			void		ClearError() { m_bError = false; }
 			bool		IsError() { return m_bError; }
 			void		WriteRunningStateToSyserr();
-#ifndef __WIN32__
 			void		QuestError(const char* func, int line, const char* fmt, ...);
-#else
-			//void		QuestError(const char* fmt, ...);
-			void		QuestError(const char* func, int line, const char* fmt, ...);
-#endif
+
 
 			void		RegisterNPCVnum(DWORD dwVnum);
 

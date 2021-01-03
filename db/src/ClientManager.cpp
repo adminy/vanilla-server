@@ -3199,19 +3199,6 @@ int CClientManager::Process()
 		}
 	}
 
-#ifdef __WIN32__
-	if (_kbhit()) {
-		int c = _getch();
-		switch (c) {
-			case 0x1b: // Esc
-				return 0; // shutdown
-				break;
-			default:
-				break;
-		}
-	}
-#endif
-
 	VCardProcess();
 	return 1;
 }

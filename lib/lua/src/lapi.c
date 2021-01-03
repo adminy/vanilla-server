@@ -26,14 +26,6 @@
 #include "lundump.h"
 #include "lvm.h"
 
-
-const char lua_ident[] =
-  "$Lua: " LUA_VERSION " " LUA_COPYRIGHT " $\n"
-  "$Authors: " LUA_AUTHORS " $\n"
-  "$URL: www.lua.org $\n";
-
-
-
 #ifndef api_check
 #define api_check(L, o)		/*{ assert(o); }*/
 #endif

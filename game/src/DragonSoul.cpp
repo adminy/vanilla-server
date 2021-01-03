@@ -375,7 +375,7 @@ bool DSManager::ExtractDragonHeart(LPCHARACTER ch, LPITEM pItem, LPITEM pExtract
 		if (NULL == pDH)
 		{
 			sys_err ("Cannot create DRAGON_HEART(%d).", DRAGON_HEART_VNUM);
-			return NULL;
+			return false;
 		}
 
 		pItem->SetCount(pItem->GetCount() - 1);

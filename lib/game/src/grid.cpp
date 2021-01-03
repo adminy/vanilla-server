@@ -1,6 +1,4 @@
-#ifndef __WIN32__
 #include <string>
-#endif
 #include <cstring>
 #include <stdio.h>
 #include "../../core/include/memcpy.h"

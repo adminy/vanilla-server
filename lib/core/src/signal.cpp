@@ -7,11 +7,7 @@
 #define __LIBTHECORE__
 #include "stdafx.h"
 
-#ifdef __WIN32__
-void signal_setup() {}
-void signal_timer_disable() {}
-void signal_timer_enable(int timeout_seconds) {}
-#elif __FreeBSD__
+#ifdef __FreeBSD__
 #define RETSIGTYPE void
 
 RETSIGTYPE reap(int sig)

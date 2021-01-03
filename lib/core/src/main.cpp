@@ -18,9 +18,6 @@ unsigned int	thecore_profiler[NUM_PF];
 
 static int pid_init(void)
 {   
-#ifdef __WIN32__
-	return true;
-#else
 	FILE*	fp;
 	if ((fp = fopen("pid", "w")))
 	{
@@ -35,27 +32,18 @@ static int pid_init(void)
 		return false;
 	}
 	return true;
-#endif
 }
 
 static void pid_deinit(void)
 {   
-#ifdef __WIN32__
-    return;
-#else
     remove("./pid");
 	sys_log(0, "\nEnd of pid\n");
-#endif
 }
 
 int thecore_init(int fps, HEARTFUNC heartbeat_func)
 {
-#ifndef __WIN32__
+
     srand(time(0));
-#else
-    srandom(time(0) + getpid() + getuid());
-    srandomdev();
-#endif
     signal_setup();
 
 	if (!log_init() || !pid_init())

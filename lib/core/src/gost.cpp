@@ -37,7 +37,7 @@ void GOST_Init()
     }
 }
 
-INLINE static DWORD f(DWORD x)
+static DWORD f(DWORD x)
 {
     x = k87[x >> 24 & 255] << 24 | k65[x >> 16 & 255] << 16 | k43[x >> 8 & 255] <<  8 | k21[x & 255];
     return x << 11 | x >> (32 - 11);

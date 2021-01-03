@@ -87,7 +87,7 @@ class SECTREE
 
 		template <class _Func> LPENTITY	find_if (_Func & func) const
 		{
-			LPSECTREE_LIST::const_iterator it_tree = m_neighbor_list.begin();
+			auto it_tree = m_neighbor_list.begin();
 
 			while (it_tree != m_neighbor_list.end())
 			{
@@ -111,7 +111,7 @@ class SECTREE
 		{
 			// <Factor> Using snapshot copy to avoid side-effects
 			FCollectEntity collector;
-			LPSECTREE_LIST::iterator it = m_neighbor_list.begin();
+			auto it = m_neighbor_list.begin();
 			for ( ; it != m_neighbor_list.end(); ++it)
 			{
 				LPSECTREE sectree = *it;
@@ -119,7 +119,7 @@ class SECTREE
 			}
 			collector.ForEach(func);
 			/*
-			LPSECTREE_LIST::iterator it_tree = m_neighbor_list.begin();
+			auto it_tree = m_neighbor_list.begin();
 			for ( ; it_tree != m_neighbor_list.end(); ++it_tree) {
 				(*it_tree)->for_each_entity(func);
 			}
@@ -128,7 +128,7 @@ class SECTREE
 
 		template <class _Func> void for_each_for_find_victim(_Func & func)
 		{
-			LPSECTREE_LIST::iterator it_tree = m_neighbor_list.begin();
+			auto it_tree = m_neighbor_list.begin();
 
 			while (it_tree != m_neighbor_list.end())
 			{

@@ -6,7 +6,7 @@
 
 
 #include <stdlib.h>
-#include <string>
+#include <string.h>
 
 #define ldebug_c
 

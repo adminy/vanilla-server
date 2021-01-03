@@ -6,7 +6,7 @@ setup:
 	mkdir -p obj
 
 obj/%.o: src/%.c
-	@$(CC) -Iinclude -c $< -o $@
+	@$(CXX) $(CFLAGS) -Iinclude -c $< -o $@
 
 $(OUT):	$(OBJS)
 	@$(AR) -cq $@ $^

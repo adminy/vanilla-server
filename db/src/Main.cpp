@@ -57,7 +57,7 @@ void emergency_sig(int sig)
 		abort();
 }
 
-int main()
+int main(int argc, char **argv)
 {
 	WriteVersion();
 
@@ -386,9 +386,7 @@ int Start()
 		return false;
 	}
 
-#ifndef __WIN32__
 	signal(SIGUSR1, emergency_sig);
-#endif
 	signal(SIGSEGV, emergency_sig);
 	return true;
 }

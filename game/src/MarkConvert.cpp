@@ -1,10 +1,6 @@
 #include "stdafx.h"
 #include "MarkManager.h"
 
-#ifdef __WIN32__
-#include <direct.h>
-#endif
-
 #define OLD_MARK_INDEX_FILENAME "guild_mark.idx"
 #define OLD_MARK_DATA_FILENAME "guild_mark.tga"
 
@@ -31,18 +27,10 @@ static Pixel * LoadOldGuildMarkImageFile()
 bool GuildMarkConvert(const std::vector<DWORD> & vecGuildID)
 {
 	// 폴더 생성
-#ifndef __WIN32__
 	mkdir("mark", S_IRWXU);
-#else
-	_mkdir("mark");
-#endif
 
 	// 인덱스 파일이 있나? 
-#ifndef __WIN32__
 	if (0 != access(OLD_MARK_INDEX_FILENAME, F_OK))
-#else
-	if (0 != _access(OLD_MARK_INDEX_FILENAME, 0))
-#endif
 		return true;
 
 	// 인덱스 파일 열기
@@ -120,13 +108,8 @@ bool GuildMarkConvert(const std::vector<DWORD> & vecGuildID)
 	fclose(fp);
 
 	// 컨버트는 한번만 하면되므로 파일을 옮겨준다.
-#ifndef __WIN32__
 	system("mv -f guild_mark.idx guild_mark.idx.removable");
 	system("mv -f guild_mark.tga guild_mark.tga.removable");
-#else
-	system("move /Y guild_mark.idx guild_mark.idx.removable");
-	system("move /Y guild_mark.tga guild_mark.tga.removable");
-#endif
 
 	sys_log(0, "Guild Mark Converting Complete.");
 

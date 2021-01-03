@@ -97,9 +97,6 @@ void kboxinit(void)
  *
  * This should be inlined for maximum speed
  */
-#if __GNUC__
-__inline__
-#endif
 static word32 f(word32 x)
 {
     /* Do substitutions */

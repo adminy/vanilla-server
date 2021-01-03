@@ -12,11 +12,7 @@
 #include "db.h"
 
 #undef sys_err
-#ifndef __WIN32__
 #define sys_err(fmt, args...) quest::CQuestManager::instance().QuestError(__FUNCTION__, __LINE__, fmt, ##args)
-#else
-#define sys_err(fmt, ...) quest::CQuestManager::instance().QuestError(__FUNCTION__, __LINE__, fmt, __VA_ARGS__)
-#endif
 
 extern ACMD(do_in_game_mall);
 

@@ -233,42 +233,11 @@ void * fdwatch_get_client_data(LPFDWATCH fdw, unsigned int event_idx)
 }
 #else	// ifndef __USE_SELECT__
 
-#ifdef __WIN32__
-static int win32_init_refcount = 0;
-
-static bool win32_init()
-{
-    if (win32_init_refcount > 0)
-    {
-	win32_init_refcount++;
-	return true;
-    }
-
-    WORD wVersion = MAKEWORD(2, 0);
-    WSADATA wsaData;
-
-    if (WSAStartup(wVersion, &wsaData) != 0)
-	return false;
-
-    win32_init_refcount++;
-    return true;
-}
-
-static void win32_deinit()
-{
-    if (--win32_init_refcount <= 0)
-	WSACleanup();
-}
-#endif
 
 LPFDWATCH fdwatch_new(int nfiles)
 {
     LPFDWATCH fdw;
 
-#ifdef __WIN32__
-    if (!win32_init())
-	return NULL;
-#endif
 	// nfiles value is limited to FD_SETSIZE (64)
     CREATE(fdw, FDWATCH, 1);
 	fdw->nfiles = MIN(nfiles, FD_SETSIZE);
@@ -294,10 +263,6 @@ void fdwatch_delete(LPFDWATCH fdw)
     free(fdw->select_fds);
     free(fdw->select_rfdidx);
     free(fdw);
-
-#ifdef __WIN32__
-    win32_deinit();
-#endif
 }
 
 static int fdwatch_get_fdidx(LPFDWATCH fdw, socket_t fd) {

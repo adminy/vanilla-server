@@ -76,10 +76,6 @@
 #include "auction_manager.h"
 #endif
 
-// #ifndef __WIN32__
-// #include <gtest/gtest.h>
-// #endif
-
 #ifdef USE_STACKTRACE
 #include <execinfo.h>
 #endif
@@ -356,18 +352,6 @@ int main(int argc, char **argv)
 	DebugAllocator::StaticSetUp();
 #endif
 
-// #ifndef __WIN32__
-// 	// <Factor> start unit tests if option is set
-// 	if ( argc > 1 ) 
-// 	{
-// 		if ( strcmp( argv[1], "unittest" ) == 0 )
-// 		{
-// 			::testing::InitGoogleTest(&argc, argv);
-// 			return RUN_ALL_TESTS();
-// 		}
-// 	}
-// #endif
-
 	ilInit(); // DevIL Initialize
 
 	WriteVersion();
@@ -643,10 +627,6 @@ int start(int argc, char **argv)
 	config_init(st_localeServiceName);
 	// END_OF_LOCALE_SERVICE
 
-#ifdef __WIN32__
-	// In Windows dev mode, "verbose" option is [on] by default.
-	bVerbose = true;
-#endif
 	if (!bVerbose)
 		freopen("stdout", "a", stdout);
 
@@ -831,20 +811,6 @@ int idle()
 		memset(&thecore_profiler[0], 0, sizeof(thecore_profiler));
 		memset(&s_dwProfiler[0], 0, sizeof(s_dwProfiler));
 	}
-
-#ifdef __WIN32__
-	if (_kbhit()) {
-		int c = _getch();
-		switch (c) {
-			case 0x1b: // Esc
-				return 0; // shutdown
-				break;
-			default:
-				break;
-		}
-	}
-#endif
-
 	return 1;
 }
 

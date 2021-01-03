@@ -1,9 +1,9 @@
 OUT = ../bin/game_v$(VERSION)
 INCLUDE_DIR += -Iinclude -I../lib -I../lib/lua/include
 LIBS_DIR += -L../lib/out
-CFLAGS += -fexceptions -std=c++14
+# CFLAGS += -fexceptions
 # CLINKFLAGS_DBG = $(CFLAGS) -Wl,-rpath,/usr/local/lib32/metin2 -fstandalone-debug -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls #CLINKFLAGS_REL += -flto
-LIBS = -pthread -lm -lIL -ljpeg -lmysqlclient -lz -lcryptopp -lssl -llzo2  -lgtest -llua -lcore -lpoly -lsql -lgame  # -lmd /usr/local/lib/libexecinfo.a == use_stacktrace
+LIBS = -pthread -lm -lIL -ljpeg -lmysqlclient -lz -lcryptopp -lssl -llzo2  -lgtest -llua -lcore -lpoly -lsql -lgame -nostartfiles  # -lmd /usr/local/lib/libexecinfo.a == use_stacktrace
 CPP_FILES := $(wildcard src/*.cpp)
 OBJ_FILES := $(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 default: setup $(OUT)
@@ -17,7 +17,8 @@ obj/%.o: src/%.cpp
 	@$(CXX) $(CFLAGS) $(INCLUDE_DIR) -D__SERVER_VERSION__=\"$(VERSION)\" -c $< -o $@
 
 $(OUT): $(OBJ_FILES)
-	@$(CXX) $(CFLAGS) $(LIBS_DIR) $(LIBS) $^ -o $@ 
+	@printf "\033[0;31mYet to successfully build game ....\033[0m\n"
+	# @$(CXX) $(CFLAGS) $(LIBS_DIR) $(LIBS) $^ -o $@ 
 	
 clean:
 	@rm -rf obj

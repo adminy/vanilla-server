@@ -1,6 +1,4 @@
-#ifndef __WIN32__
 #include <sys/time.h>
-#endif
 #include <stdlib.h>
 
 #include <cstring>
@@ -8,22 +6,13 @@
 #include "AsyncSQL.h"
 
 // TODO: Consider providing platform-independent mutex class.
-#ifndef __WIN32__
 #define MUTEX_LOCK(mtx) pthread_mutex_lock(mtx)
 #define MUTEX_UNLOCK(mtx) pthread_mutex_unlock(mtx)
-#else
-#define MUTEX_LOCK(mtx) ::EnterCriticalSection(mtx)
-#define MUTEX_UNLOCK(mtx) ::LeaveCriticalSection(mtx)
-#endif
 
 CAsyncSQL::CAsyncSQL()
 	: m_stHost(""), m_stUser(""), m_stPassword(""), m_stDB(""), m_stLocale(""),
 	m_iMsgCount(0), m_iPort(0), m_bEnd(false),
-#ifndef __WIN32__
 	m_hThread(0), 
-#else
-	m_hThread(INVALID_HANDLE_VALUE),
-#endif
 	m_mtxQuery(NULL), m_mtxResult(NULL),
 	m_iQueryFinished(0), m_ulThreadID(0), m_bConnected(false), m_iCopiedQuery(0)
 {
@@ -50,33 +39,20 @@ void CAsyncSQL::Destroy()
 
 	if (m_mtxQuery)
 	{
-#ifndef __WIN32__
 		pthread_mutex_destroy(m_mtxQuery);
-#else
-		::DeleteCriticalSection(m_mtxQuery);
-#endif
 		delete m_mtxQuery;
 		m_mtxQuery = NULL;
 	}
 
 	if (m_mtxResult)
 	{
-#ifndef __WIN32__
 		pthread_mutex_destroy(m_mtxResult);
-#else
-		::DeleteCriticalSection(m_mtxResult);
-#endif
 		delete m_mtxResult;
 		m_mtxQuery = NULL;
 	}
 }
 
-#ifndef __WIN32__
-void * AsyncSQLThread(void * arg)
-#else
-unsigned int __stdcall AsyncSQLThread(void* arg)
-#endif
-{
+void * AsyncSQLThread(void * arg) {
 	CAsyncSQL * pSQL = ((CAsyncSQL *) arg);
 
 	if (!pSQL->Connect())
@@ -178,37 +154,20 @@ bool CAsyncSQL::Setup(const char * c_pszHost, const char * c_pszUser, const char
 			return false;
 		}
 		*/
-#ifndef __WIN32__
 		m_mtxQuery = new pthread_mutex_t;
 		m_mtxResult = new pthread_mutex_t;
 
-		if (0 != pthread_mutex_init(m_mtxQuery, NULL))
-		{
+		if (0 != pthread_mutex_init(m_mtxQuery, NULL)) {
 			perror("pthread_mutex_init");
 			exit(0);
 		}
 
-		if (0 != pthread_mutex_init(m_mtxResult, NULL))
-		{
+		if (0 != pthread_mutex_init(m_mtxResult, NULL)) {
 			perror("pthread_mutex_init");
 			exit(0);
 		}
 
 		pthread_create(&m_hThread, NULL, AsyncSQLThread, this);
-#else
-		m_mtxQuery = new CRITICAL_SECTION;
-		m_mtxResult = new CRITICAL_SECTION;
-
-		::InitializeCriticalSection(m_mtxQuery);
-		::InitializeCriticalSection(m_mtxResult);
-
-		m_hThread = (HANDLE)::_beginthreadex(NULL, 0, AsyncSQLThread, this, 0, NULL);
-		if (m_hThread == INVALID_HANDLE_VALUE) {
-			perror("CAsyncSQL::Setup");
-			return false;
-		}
-#endif
-
 		return true;
 	}
 	else
@@ -219,19 +178,11 @@ void CAsyncSQL::Quit()
 {
 	m_bEnd = true;
 	m_sem.Release();
-
-#ifndef __WIN32__
 	if (m_hThread)
 	{
 		pthread_join(m_hThread, NULL);
-		m_hThread = NULL;
+		m_hThread = 0;
 	}
-#else
-	if (m_hThread != INVALID_HANDLE_VALUE) {
-		::WaitForSingleObject(m_hThread, INFINITE);
-		m_hThread = INVALID_HANDLE_VALUE;
-	}
-#endif
 }
 
 SQLMsg * CAsyncSQL::DirectQuery(const char * c_pszQuery)

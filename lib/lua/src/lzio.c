@@ -5,7 +5,7 @@
 */
 
 
-#include <string>
+#include <string.h>
 
 #define lzio_c
 

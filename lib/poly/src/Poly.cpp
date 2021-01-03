@@ -8,13 +8,8 @@
 
 using namespace std;
 
-double _random()
-{
-#ifndef __WIN32__
+double _random() {
     return random() / (2147483648.0);
-#else
-	return rand() / (2147483648.0);
-#endif
 }
 
 int CPoly::my_irandom(double start, double end)
